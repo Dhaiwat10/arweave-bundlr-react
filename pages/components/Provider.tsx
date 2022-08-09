@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { WebBundlr } from '@bundlr-network/client';
 import { BigNumber, ethers, providers } from 'ethers';
+import { useAccount } from 'wagmi';
 
 interface IAppContextType {
   bundlr: WebBundlr | undefined;
@@ -35,6 +36,8 @@ export const Provider: FC<IProviderProps> = ({
   bundlrRpcUrl = 'https://node1.bundlr.network',
   currency = 'matic',
 }) => {
+  const { address } = useAccount();
+
   const [bundlr, setBundlr] = useState<WebBundlr>();
   const [balance, setBalance] = useState<string>();
 
@@ -50,11 +53,11 @@ export const Provider: FC<IProviderProps> = ({
   useEffect(() => {
     (async () => {
       if (bundlr) {
-        const balance = await bundlr.getLoadedBalance();
+        const balance = await bundlr.getBalance(address as string);
         setBalance(balance.toString());
       }
     })();
-  }, [bundlr]);
+  }, [bundlr, address]);
 
   return (
     <AppContext.Provider
